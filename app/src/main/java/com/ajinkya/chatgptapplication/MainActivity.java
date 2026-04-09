@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String KEY_MESSAGES = "messages_state";
     private static final String KEY_PENDING = "pending_user_message";
+    private static final String KEY_PENDING_AT = "pending_user_message_at";
 
     private final List<Message> messageList = new ArrayList<>();
     private final ChatManager chatManager = new ChatManager();
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText inputMessage;
     private ImageButton sendButton;
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private final Runnable unlockFallback = () -> sendButton.setEnabled(true);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,13 +79,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void scheduleBotReply(String userText) {
+        handler.removeCallbacks(unlockFallback);
         handler.postDelayed(() -> {
-            String botReply = chatManager.getBotReply(userText);
+            String botReply = chatManager.getBotReply(userText, messageList);
             messageList.add(new Message(botReply, false));
             messageAdapter.notifyItemInserted(messageList.size() - 1);
             scrollToBottom();
             sendButton.setEnabled(true);
         }, 1000);
+        // Safety unlock in case any unexpected runtime issue occurs.
+        handler.postDelayed(unlockFallback, 1800);
     }
 
     @Override
@@ -99,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
             Message last = messageList.get(messageList.size() - 1);
             if (last.isUser()) {
                 outState.putString(KEY_PENDING, last.getText());
+                outState.putLong(KEY_PENDING_AT, System.currentTimeMillis());
             }
         }
     }
