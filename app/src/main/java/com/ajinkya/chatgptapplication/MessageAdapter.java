@@ -3,7 +3,6 @@ package com.ajinkya.chatgptapplication;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,67 +10,65 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final int VIEW_TYPE_USER = 1;
+    private static final int VIEW_TYPE_BOT = 2;
 
-public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHolder> {
-List<Message> messageList;
+    private final List<Message> messageList;
 
-    public MessageAdapter(List<Message> messageList)
-    {
-        this.messageList= messageList;
+    public MessageAdapter(List<Message> messageList) {
+        this.messageList = messageList;
     }
 
     @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View chatView = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_item, parent, false);
-        return new MyViewHolder(chatView);
-
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        if (viewType == VIEW_TYPE_USER) {
+            View view = inflater.inflate(R.layout.item_user_message, parent, false);
+            return new UserMessageViewHolder(view);
+        }
+        View view = inflater.inflate(R.layout.item_bot_message, parent, false);
+        return new BotMessageViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Message message = messageList.get(position);
-        String text = message.getMessage() != null ? message.getMessage() : "";
-        if (Message.SENT_BY_ME.equals(message.getSentBy()))
-        {
-            holder.leftChatView.setVisibility(View.GONE);
-            holder.rightChatView.setVisibility(View.VISIBLE);
-            holder.rightTextView.setText(text);
-
+        String text = message.getText() != null ? message.getText() : "";
+        if (holder instanceof UserMessageViewHolder) {
+            ((UserMessageViewHolder) holder).messageTextView.setText(text);
+        } else if (holder instanceof BotMessageViewHolder) {
+            ((BotMessageViewHolder) holder).messageTextView.setText(text);
         }
-        else
-        {
-            holder.rightChatView.setVisibility(View.GONE);
-            holder.leftChatView.setVisibility(View.VISIBLE);
-            holder.leftTextView.setText(text);
-
-        }
-
     }
 
     @Override
-    public int getItemCount()
-    {
+    public int getItemCount() {
         return messageList == null ? 0 : messageList.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder
-    {
+    @Override
+    public int getItemViewType(int position) {
+        Message message = messageList.get(position);
+        return message.isUser() ? VIEW_TYPE_USER : VIEW_TYPE_BOT;
+    }
 
-        LinearLayout leftChatView,rightChatView;
-        TextView leftTextView,rightTextView;
+    static class UserMessageViewHolder extends RecyclerView.ViewHolder {
+        final TextView messageTextView;
 
-
-        public MyViewHolder(@NonNull View itemView) {
+        UserMessageViewHolder(@NonNull View itemView) {
             super(itemView);
-
-            leftChatView = itemView.findViewById(R.id.left_chat_view);
-            rightChatView = itemView.findViewById(R.id.right_chat_view);
-            leftTextView = itemView.findViewById(R.id.left_chat_text_view);
-            rightTextView = itemView.findViewById(R.id.right_chat_text_view);
-
-
+            messageTextView = itemView.findViewById(R.id.user_message_text);
         }
     }
 
+    static class BotMessageViewHolder extends RecyclerView.ViewHolder {
+        final TextView messageTextView;
+
+        BotMessageViewHolder(@NonNull View itemView) {
+            super(itemView);
+            messageTextView = itemView.findViewById(R.id.bot_message_text);
+        }
+    }
 }

@@ -9,6 +9,9 @@ import android.os.Handler;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import com.ajinkya.chatgptapplication.ui.auth.LoginActivity;
+import com.google.firebase.auth.FirebaseAuth;
+
 public class SplashActivity extends AppCompatActivity {
     AppCompatImageView iv_logo;
 
@@ -28,11 +31,14 @@ public class SplashActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent i = new Intent(SplashActivity.this,MainActivity.class);
+                Intent i = new Intent(
+                        SplashActivity.this,
+                        FirebaseAuth.getInstance().getCurrentUser() != null ? MainActivity.class : LoginActivity.class
+                );
                 startActivity(i);
                 finish();
             }
-        },3000);
+        }, 800);
 
     }
 }

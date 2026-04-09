@@ -1,213 +1,122 @@
 package com.ajinkya.chatgptapplication;
 
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.widget.EditText;
+import android.widget.ImageButton;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Looper;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
 public class MainActivity extends AppCompatActivity {
 
-ImageView back_arrow,menu_arrow;
-TextView tv_toolbar;
-    RecyclerView recyclerView;
-    TextView welcomeTextView;
-    EditText messageEditText;
-    ImageButton sendButton;
+    private static final String KEY_MESSAGES = "messages_state";
+    private static final String KEY_PENDING = "pending_user_message";
 
-    List<Message> messageList;
-MessageAdapter messageAdapter;
+    private final List<Message> messageList = new ArrayList<>();
+    private final ChatManager chatManager = new ChatManager();
+    private MessageAdapter messageAdapter;
+    private RecyclerView recyclerView;
+    private EditText inputMessage;
+    private ImageButton sendButton;
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
-    public static final MediaType JSON
-            = MediaType.get("application/json; charset=utf-8");
-
-    OkHttpClient client = new OkHttpClient();
-
-
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        messageList = new ArrayList<>();
 
-        //Toolbar id
-        back_arrow = findViewById(R.id.back_arrow);
-        menu_arrow = findViewById(R.id.menu_arrow);
-        tv_toolbar = findViewById(R.id.tv_toolbar);
-
-        if (back_arrow != null) {
-            back_arrow.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
-        }
-
-        //chatgpt id
-        recyclerView = findViewById(R.id.recycle_view);
-        welcomeTextView = findViewById(R.id.welcome_text);
-        messageEditText = findViewById(R.id.message_edit_text);
-        sendButton = findViewById(R.id.send_btn);
-
-        if (recyclerView == null || welcomeTextView == null || messageEditText == null || sendButton == null) {
-            Toast.makeText(this, "Layout initialization failed.", Toast.LENGTH_LONG).show();
-            return;
-        }
+        recyclerView = findViewById(R.id.recycler_view_messages);
+        inputMessage = findViewById(R.id.edit_text_message);
+        sendButton = findViewById(R.id.button_send);
 
         messageAdapter = new MessageAdapter(messageList);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(messageAdapter);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
+        recyclerView.setHasFixedSize(false);
 
-        llm.setStackFromEnd(true);
-        recyclerView.setLayoutManager(llm);
+        sendButton.setOnClickListener(v -> onSendClicked());
 
-    sendButton.setOnClickListener((v)->
-        {
-
-            String question = messageEditText.getText().toString().trim();
-            if (question.isEmpty()) {
-                Toast.makeText(MainActivity.this, "Please enter a message", Toast.LENGTH_SHORT).show();
-                return;
+        if (savedInstanceState != null) {
+            restoreMessages(savedInstanceState.getStringArrayList(KEY_MESSAGES));
+            String pending = savedInstanceState.getString(KEY_PENDING);
+            if (pending != null && !pending.trim().isEmpty()) {
+                sendButton.setEnabled(false);
+                scheduleBotReply(pending);
             }
-            addTOchat(question,Message.SENT_BY_ME);
-            messageEditText.setText("");
-            callAPI(question);
-            welcomeTextView.setVisibility(View.GONE);
-        });
-
+        }
     }
-    void appendMessage(String message, String sentBy) {
-        String safeMessage = message == null ? "" : message;
-        if (messageList == null || messageAdapter == null) {
+
+    private void onSendClicked() {
+        String userText = inputMessage.getText() != null ? inputMessage.getText().toString().trim() : "";
+        if (userText.isEmpty()) {
             return;
         }
-        messageList.add(new Message(safeMessage, sentBy));
+
+        messageList.add(new Message(userText, true));
+        messageAdapter.notifyItemInserted(messageList.size() - 1);
+        inputMessage.setText("");
+        scrollToBottom();
+
+        sendButton.setEnabled(false);
+        scheduleBotReply(userText);
+    }
+
+    private void scrollToBottom() {
+        if (!messageList.isEmpty()) {
+            recyclerView.smoothScrollToPosition(messageList.size() - 1);
+        }
+    }
+
+    private void scheduleBotReply(String userText) {
+        handler.postDelayed(() -> {
+            String botReply = chatManager.getBotReply(userText);
+            messageList.add(new Message(botReply, false));
+            messageAdapter.notifyItemInserted(messageList.size() - 1);
+            scrollToBottom();
+            sendButton.setEnabled(true);
+        }, 1000);
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        ArrayList<String> encoded = new ArrayList<>();
+        for (Message m : messageList) {
+            encoded.add((m.isUser() ? "u|" : "b|") + (m.getText() == null ? "" : m.getText()));
+        }
+        outState.putStringArrayList(KEY_MESSAGES, encoded);
+
+        if (!messageList.isEmpty()) {
+            Message last = messageList.get(messageList.size() - 1);
+            if (last.isUser()) {
+                outState.putString(KEY_PENDING, last.getText());
+            }
+        }
+    }
+
+    private void restoreMessages(ArrayList<String> encoded) {
+        if (encoded == null || encoded.isEmpty()) {
+            return;
+        }
+        messageList.clear();
+        for (String row : encoded) {
+            if (row == null || row.length() < 2) {
+                continue;
+            }
+            boolean isUser = row.startsWith("u|");
+            String text = row.length() > 2 ? row.substring(2) : "";
+            messageList.add(new Message(text, isUser));
+        }
         messageAdapter.notifyDataSetChanged();
-        if (recyclerView != null && messageAdapter.getItemCount() > 0) {
-            recyclerView.smoothScrollToPosition(messageAdapter.getItemCount() - 1);
-        }
+        scrollToBottom();
     }
-
-    void addTOchat(String message,String sentBy)
-    {
-        if (Looper.getMainLooper().isCurrentThread()) {
-            appendMessage(message, sentBy);
-        } else {
-            runOnUiThread(() -> appendMessage(message, sentBy));
-        }
-
-    }
-
-    void  addResponse(String response)
-    {
-        runOnUiThread(() -> {
-            if (!messageList.isEmpty()) {
-                messageList.remove(messageList.size() - 1);
-            }
-            appendMessage(response, Message.SENT_BY_BOT);
-        });
-
-    }
-
-    void callAPI(String question)
-    {
-        if (messageList == null) {
-            return;
-        }
-        messageList.add(new Message("Typing....",Message.SENT_BY_BOT));
-        JSONObject jsonBody = new JSONObject();
-
-        try {
-            JSONArray contents = new JSONArray();
-            JSONObject content = new JSONObject();
-            JSONArray parts = new JSONArray();
-            JSONObject part = new JSONObject();
-
-            part.put("text", question);
-            parts.put(part);
-            content.put("parts", parts);
-            contents.put(content);
-            jsonBody.put("contents", contents);
-        } catch (JSONException e) {
-          e.printStackTrace();
-        }
-        finally {
-
-        }
-
-
-
-
-        RequestBody body = RequestBody.create(jsonBody.toString(),JSON);
-        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key="
-                + BuildConfig.GEMINI_API_KEY;
-        Request request = new Request.Builder()
-                .url(url)
-                .header("Content-Type","application/json")
-                .post(body)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                addResponse("Failed to Load response due to "+e.getMessage());
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if(response.isSuccessful()){
-                    JSONObject jsonObject = null;
-                    try {
-                        if (response.body() == null) {
-                            addResponse("Empty response from server.");
-                            return;
-                        }
-                        jsonObject = new JSONObject(response.body().string());
-                        JSONArray candidates = jsonObject.getJSONArray("candidates");
-                        JSONObject firstCandidate = candidates.getJSONObject(0);
-                        JSONObject content = firstCandidate.getJSONObject("content");
-                        JSONArray parts = content.getJSONArray("parts");
-                        String result = parts.length() > 0 ? parts.getJSONObject(0).optString("text", "") : "";
-                        if (result == null || result.trim().isEmpty()) {
-                            addResponse("No text response from Gemini.");
-                        } else {
-                            addResponse(result.trim());
-                        }
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        addResponse("Failed to parse Gemini response.");
-                    }
-
-                }else{
-                    addResponse("Failed to response due to HTTP " + response.code());
-                }
-            }
-        });
-    }
-
-
 }

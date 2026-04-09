@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/toolbar_root"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/purple_200">
+    android:layout_height="56dp"
+    android:background="@color/accent"
+    android:elevation="2dp"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/back_arrow"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerVertical="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Back"
+        android:padding="8dp"
+        android:src="@drawable/baseline_arrow_back_24" />
 
+    <TextView
+        android:id="@+id/tv_toolbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="12dp"
+        android:layout_toEndOf="@id/back_arrow"
+        android:fontFamily="sans-serif-medium"
+        android:text="AI Chat"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/back_arrow"
-            android:layout_centerVertical="true"
-            android:src="@drawable/baseline_arrow_back_24"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ChatGPT"
-            android:id="@+id/tv_toolbar"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@id/back_arrow"
-            android:fontFamily="sans-serif-condensed-light"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:layout_marginStart="20dp"/>
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/menu_arrow"
-            android:layout_centerVertical="true"
-            android:layout_alignParentEnd="true"
-            android:src="@drawable/baseline_menu_24"/>
-
-
-    </RelativeLayout>
-
+    <ImageView
+        android:id="@+id/menu_arrow"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Menu"
+        android:padding="8dp"
+        android:src="@drawable/baseline_menu_24" />
 </RelativeLayout>
