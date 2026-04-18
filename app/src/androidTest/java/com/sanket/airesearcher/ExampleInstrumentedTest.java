@@ -1,4 +1,4 @@
-package com.ajinkya.chatgptapplication;
+package com.sanket.airesearcher;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.ajinkya.chatgptapplication", appContext.getPackageName());
+        assertEquals("com.sanket.airesearcher", appContext.getPackageName());
     }
 }

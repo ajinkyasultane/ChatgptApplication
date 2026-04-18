@@ -1,4 +1,4 @@
-package com.ajinkya.chatgptapplication;
+package com.sanket.airesearcher;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -9,7 +9,7 @@ import android.os.Handler;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-import com.ajinkya.chatgptapplication.ui.auth.LoginActivity;
+import com.sanket.airesearcher.ui.auth.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class SplashActivity extends AppCompatActivity {

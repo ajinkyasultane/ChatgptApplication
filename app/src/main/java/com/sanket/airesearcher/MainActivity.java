@@ -1,4 +1,4 @@
-package com.ajinkya.chatgptapplication;
+package com.sanket.airesearcher;
 
 import android.os.Bundle;
 import android.os.Handler;

@@ -1,4 +1,4 @@
-package com.ajinkya.chatgptapplication;
+package com.sanket.airesearcher;
 
 import org.junit.Test;
 

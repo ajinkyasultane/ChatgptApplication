@@ -1,11 +1,11 @@
-package com.ajinkya.chatgptapplication.data.repository;
+package com.sanket.airesearcher.data.repository;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 
-import com.ajinkya.chatgptapplication.Message;
+import com.sanket.airesearcher.Message;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 

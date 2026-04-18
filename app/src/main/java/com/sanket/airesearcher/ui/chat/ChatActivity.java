@@ -1,4 +1,4 @@
-package com.ajinkya.chatgptapplication.ui.chat;
+package com.sanket.airesearcher.ui.chat;
 
 import android.os.Bundle;
 import android.view.View;
@@ -15,10 +15,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ajinkya.chatgptapplication.Message;
-import com.ajinkya.chatgptapplication.MessageAdapter;
-import com.ajinkya.chatgptapplication.R;
-import com.ajinkya.chatgptapplication.viewmodel.ChatViewModel;
+import com.sanket.airesearcher.Message;
+import com.sanket.airesearcher.MessageAdapter;
+import com.sanket.airesearcher.R;
+import com.sanket.airesearcher.viewmodel.ChatViewModel;
 
 import java.util.ArrayList;
 import java.util.List;

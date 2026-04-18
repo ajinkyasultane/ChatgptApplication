@@ -1,4 +1,4 @@
-package com.ajinkya.chatgptapplication.viewmodel;
+package com.sanket.airesearcher.viewmodel;
 
 import android.app.Application;
 
@@ -7,9 +7,9 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.ajinkya.chatgptapplication.Message;
-import com.ajinkya.chatgptapplication.data.remote.ChatBackendException;
-import com.ajinkya.chatgptapplication.data.repository.ChatRepository;
+import com.sanket.airesearcher.Message;
+import com.sanket.airesearcher.data.remote.ChatBackendException;
+import com.sanket.airesearcher.data.repository.ChatRepository;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.ajinkya.chatgptapplication.data.remote;
+package com.sanket.airesearcher.data.remote;
 
 import androidx.annotation.Nullable;
 

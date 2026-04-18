@@ -1,4 +1,4 @@
-package com.ajinkya.chatgptapplication.data.repository;
+package com.sanket.airesearcher.data.repository;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

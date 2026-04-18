@@ -1,4 +1,4 @@
-package com.ajinkya.chatgptapplication.viewmodel;
+package com.sanket.airesearcher.viewmodel;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.ajinkya.chatgptapplication.data.repository.AuthRepository;
+import com.sanket.airesearcher.data.repository.AuthRepository;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;

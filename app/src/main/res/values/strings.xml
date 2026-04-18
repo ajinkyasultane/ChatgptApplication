@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Chatgpt Application</string>
+    <string name="app_name">Ai Researcher</string>
     <!-- Paste Web client ID from Firebase Console → Project settings → Your apps → Web client ID (ends with .apps.googleusercontent.com) -->
     <string name="default_web_client_id" translatable="false">529600059181-0rv36dact15oblb2s6brigqd65m0jj05.apps.googleusercontent.com</string>
     <string name="welcome_chat">Welcome to Local Chatbot</string>

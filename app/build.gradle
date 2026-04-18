@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace 'com.ajinkya.chatgptapplication'
+    namespace 'com.sanket.airesearcher'
     compileSdk 34
 
     buildFeatures {
@@ -14,7 +14,7 @@ android {
     def chatBackendUrl = project.findProperty("CHAT_BACKEND_URL") ?: ""
 
     defaultConfig {
-        applicationId "com.ajinkya.chatgptapplication"
+        applicationId "com.sanket.airesearcher"
         minSdk 25
         targetSdk 34
         versionCode 1

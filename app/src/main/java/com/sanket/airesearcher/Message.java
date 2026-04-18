@@ -1,4 +1,4 @@
-package com.ajinkya.chatgptapplication;
+package com.sanket.airesearcher;
 
 public class Message {
     public static String SENT_BY_ME = "me";

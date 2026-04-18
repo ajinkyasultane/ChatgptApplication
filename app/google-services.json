@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:529600059181:android:fc90566d600d6210c2a5a4",
         "android_client_info": {
-          "package_name": "com.ajinkya.chatgptapplication"
+          "package_name": "com.sanket.airesearcher"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "529600059181-tlvp2mhjk61762v84l0irdpb54io1teq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.ajinkya.chatgptapplication",
+            "package_name": "com.sanket.airesearcher",
             "certificate_hash": "14031f13015b07730fbe5c5b2d4f3d16a7a5e146"
           }
         },
